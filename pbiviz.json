@@ -1,0 +1,32 @@
+{
+  "visual": {
+    "name": "background3",
+    "displayName": "Background3",
+    "guid": "background31370CA2483044A96811478CE3864A5EF",
+    "visualClassName": "Visual",
+    "version": "1.0.0",
+    "description": "Two dimensional heamap matrix by day of week, bank holiday and hour of day",
+    "supportUrl": "",
+    "gitHubUrl": ""
+  },
+  "apiVersion": "1.10.0",
+  "author": {
+    "name": "David Plummer",
+    "email": "david.plummmer@dorsetccg.nhs.uk"
+  },
+  "assets": {
+    "icon": "assets/icon.png"
+  },
+  "externalJS": [
+    "node_modules/powerbi-visuals-utils-dataviewutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-typeutils/lib/index.js",
+    "node_modules/powerbi-visuals-utils-svgutils/lib/index.js",
+	  "node_modules/powerbi-visuals-utils-interactivityutils/lib/index.js",
+    "node_modules/powerbi-models/dist/models.js",
+    "node_modules/d3/d3.min.js"
+  ],
+  "style": "style/visual.less",
+  "capabilities": "capabilities.json",
+  "dependencies": "dependencies.json",
+  "stringResources": []
+}

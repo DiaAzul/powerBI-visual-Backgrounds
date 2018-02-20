@@ -1,0 +1,84 @@
+{
+    "supportsHighlight": false,
+    "objects": {
+        "text": {
+            "displayName": "Text",
+            "properties": {
+                "fontSize": {
+                    "displayName": "Font size",
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                }
+            }
+        },
+        "visBackground": {
+            "displayName": "Background",
+            "properties": {
+                "showBackground": {
+                    "displayName": "Background",
+                    "displayNameKey": "background",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "backgroundColor": {
+                    "displayName": "Colour",
+                    "displayNameKey": "backgroundColor",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "percentile": {
+                    "displayName": "Opacity",
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        },
+        "visBorder": {
+            "displayName": "Border",
+            "properties": {
+                "showBorder": {
+                    "displayName": "Border",
+                    "displayNameKey": "border",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "borderColor": {
+                    "displayName": "Colour",
+                    "displayNameKey": "borderColor",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "borderWidth": {
+                    "displayName": "Width",
+                    "displayNameKey": "lineWidth",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "borderFillet": {
+                    "displayName": "Fillet",
+                    "displayNameKey": "fillet",
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        }
+    }
+}
