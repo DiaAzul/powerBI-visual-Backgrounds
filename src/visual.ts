@@ -1,5 +1,5 @@
 /*
- *  Power BI Population Pyramid Visualization
+ *  Power BI Background Visualization
  *
  *  Copyright (c) Tanzo Creative
  *  All rights reserved.
@@ -59,14 +59,11 @@ module powerbi.extensibility.visual {
         private host: IVisualHost;
         private target: HTMLElement;
         private svg: d3.Selection<SVGElement>;
-        private background: d3.Selection<SVGElement>;
+        private defs: d3.Selection<SVGElement>;
         private chart: d3.Selection<SVGElement>;
         private settings: VisualSettings = new VisualSettings();
         private viewModel: ChartViewModel = new ChartViewModel();
-        private colorTools: ColorTools = new ColorTools();
         private locale: string;
-        private wasHighlighted: boolean;
-        private wasSelected: boolean;
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
@@ -75,16 +72,12 @@ module powerbi.extensibility.visual {
 
             this.svg = d3.select(this.target).append('svg');
 
-            // Add background behind the clear catcher
-            this.background = this.svg.append('g')
-                .attr('id', 'background');
-
         }
 
         public update(options: VisualUpdateOptions): void {
 
             this.settings = this.parseSettings(options && options.dataViews && options.dataViews[0]);
-            this.backgroundVisual(options.viewport.width, options.viewport.height); //, this.viewModel.dataPoints);
+            this.backgroundVisual(options.viewport.width, options.viewport.height);
         }
 
         /**
@@ -100,37 +93,51 @@ module powerbi.extensibility.visual {
 
             // For each control object provie a link between the uer interface and the settings property
             switch (objectName) {
-                case 'text':
+                /*                 case 'text':
+                                    objectEnumeration.push({
+                                        objectName: objectName,
+                                        properties: {
+                                            fontSize: this.settings.dataPoint.fontSize
+                                        },
+                                        selector: null
+                                    }); */
+                case 'visFill':
+                    const formatProperties: {
+                        showBackground: boolean,
+                        fillType: string,
+                        percentile?: number;
+                        lowestColor?: { solid: { color: string } }, // Optional elements that will be displayed depending on colorScheme
+                        midColor?: { solid: { color: string } },
+                        highestColor?: { solid: { color: string } }
+                    } = {
+                            showBackground: this.settings.dataPoint.showBackground,
+                            fillType: this.settings.dataPoint.fillType
+                        };
+                    switch (settings.fillType) {
+                        case 'solid':
+                            formatProperties['startColor'] = { solid: { color: settings.startColor } };
+                            break;
+                        case 'left':
+                        case 'right':
+                        case 'top':
+                        case 'bottom':
+                            formatProperties['startColor'] = { solid: { color: settings.startColor } };
+                            formatProperties['endColor'] = { solid: { color: settings.endColor } };
+                            break;
+                        default:
+                    }
+                    formatProperties['percentile'] = this.settings.dataPoint.fillOpacity;
                     objectEnumeration.push({
                         objectName: objectName,
-                        properties: {
-                            fontSize: this.settings.dataPoint.fontSize,
-                            background: this.settings.dataPoint.background,
-                            backgroundColor: this.settings.dataPoint.backgroundColor,
-                            percentile: this.settings.dataPoint.backgroundOpacity,
-                            border: this.settings.dataPoint.border,
-                            borderColor: this.settings.dataPoint.borderColor,
-                            borderWidth: this.settings.dataPoint.borderWidth,
-                            borderFillet: this.settings.dataPoint.borderFillet
-                        },
-                        selector: null
-                    });
-                case 'visBackground':
-                    objectEnumeration.push({
-                        objectName: objectName,
-                        properties: {
-                            showBackground: this.settings.dataPoint.background,
-                            backgroundColor: this.settings.dataPoint.backgroundColor,
-                            percentile: this.settings.dataPoint.backgroundOpacity
-                        },
+                        properties: formatProperties,
                         selector: null
                     });
                 case 'visBorder':
                     objectEnumeration.push({
                         objectName: objectName,
                         properties: {
-                            showBorder: this.settings.dataPoint.border,
-                            borderColor: this.settings.dataPoint.borderColor,
+                            showBorder: this.settings.dataPoint.showBorder,
+                            borderColor: { solid: { color: this.settings.dataPoint.borderColor } },
                             borderWidth: this.settings.dataPoint.borderWidth,
                             borderFillet: this.settings.dataPoint.borderFillet
                         },
@@ -168,24 +175,29 @@ module powerbi.extensibility.visual {
                     setting.fontSize = ('fontSize' in options) ? <number>options['fontSize'] : setting.fontSize;
 
                 }
-                if ('visBackground' in root) {
-                    const visBackground: DataViewObject = root['visBackground'];
+                if ('visFill' in root) {
+                    const visBackground: DataViewObject = root['visFill'];
 
-                    setting.background = ('showBackground' in visBackground) ? <boolean>visBackground['showBackground'] : setting.background;
-                    setting.backgroundColor = ('backgroundColor' in visBackground) ? <string>visBackground['backgroundColor']['solid']['color'] : setting.backgroundColor;
-                    setting.backgroundOpacity = ('percentile' in visBackground) ? <number>visBackground['percentile'] : setting.backgroundOpacity;
+                    setting.showBackground = ('showBackground' in visBackground) ? <boolean>visBackground['showBackground'] : setting.showBackground;
+                    setting.fillType = ('fillType' in visBackground) ? <string>visBackground['fillType'] : setting.fillType;
+                    setting.startColor = ('startColor' in visBackground) ? <string>visBackground['startColor']['solid']['color'] : setting.startColor;
+                    setting.midColor = ('midColor' in visBackground) ? <string>visBackground['midColor']['solid']['color'] : setting.midColor;
+                    setting.endColor = ('endColor' in visBackground) ? <string>visBackground['endColor']['solid']['color'] : setting.endColor;
+
+                    setting.fillOpacity = ('percentile' in visBackground) ? <number>visBackground['percentile'] : setting.fillOpacity;
 
                 }
                 if ('visBorder' in root) {
                     const visBorder: DataViewObject = root['visBorder'];
 
-                    setting.border = ('showBorder' in visBorder) ? <boolean>visBorder['showBorder'] : setting.border;
+                    setting.showBorder = ('showBorder' in visBorder) ? <boolean>visBorder['showBorder'] : setting.showBorder;
                     setting.borderColor = ('borderColor' in visBorder) ? <string>visBorder['borderColor']['solid']['color'] : setting.borderColor;
                     setting.borderWidth = ('borderWidth' in visBorder) ? <number>visBorder['borderWidth'] : setting.borderWidth;
                     setting.borderFillet = ('borderFillet' in visBorder) ? <number>visBorder['borderFillet'] : setting.borderFillet;
                 }
 
             }
+
             return visualSettings;
         }
 
@@ -204,17 +216,20 @@ module powerbi.extensibility.visual {
 
             const fontSize: string = settings.fontSize.toString().concat('pt');
 
-            const showBackground: boolean = settings.background;
-            const backgroundColor: string = settings.backgroundColor;
-            const backgroundOpacity: number = settings.backgroundOpacity / 100;
+            const showBackground: boolean = settings.showBackground;
+            const fillType: string = settings.fillType;
+            const startColor: string = settings.startColor;
+            const midColor: string = settings.midColor;
+            const endColor: string = settings.endColor;
+            const fillOpacity: number = settings.fillOpacity / 100;
 
-            const showBorder: Boolean = settings.border;
+            const showBorder: Boolean = settings.showBorder;
             const borderColor: string = settings.borderColor;
             const borderWidth: number = settings.borderWidth;
             const borderFillet: number = settings.borderFillet;
 
             // RefTextSize is the size of a character on screen (used for adjusting chart for different type sizes)
-            const refTextSize: { width: number, height: number } = this.textSize('W', fontSize);
+            // const refTextSize: { width: number, height: number } = this.textSize('W', fontSize);
 
             const offset: number = showBorder ? borderWidth / 2 : 0;
 
@@ -236,35 +251,70 @@ module powerbi.extensibility.visual {
                 this.svg.selectAll('#chart').remove();
             }
 
-            this.chart = this.svg
-                .append('g')
+            //Append a defs (for definition) element to your SVG
+            if (this.defs != null && !this.defs.empty()) {
+                this.svg.selectAll('#gradient').remove();
+            }
+            this.defs = this.svg.append('defs').attr('id', 'gradient');
+
+            const direction: { left: number, top: number, right: number, bottom: number} = { left: 0, top: 0, right: 0, bottom: 0 };
+
+            switch (fillType) {
+                case 'left':
+                direction.right = 100;
+                break;
+
+                case 'right':
+                direction.left = 100;
+                break;
+
+                case 'top':
+                direction.bottom = 100;
+                break;
+
+                case 'bottom':
+                direction.top = 100;
+                break;
+
+                case 'solid':
+                default:
+                break;
+
+            }
+
+            //Append a linearGradient element to the defs and give it a unique id
+            const linearGradient: d3.Selection<SVGElement> = this.defs.append('linearGradient')
+                .attr('id', 'linearGradient')
+                .attr('x1', direction.left + '%')
+                .attr('y1', direction.top + '%')
+                .attr('x2', direction.right + '%')
+                .attr('y2', direction.bottom + '%');
+
+            //Set the color for the start (0%)
+            linearGradient.append('stop')
+                .attr('offset', '0%')
+                .attr('stop-color', startColor); //light blue
+
+            //Set the color for the end (100%)
+            linearGradient.append('stop')
+                .attr('offset', '100%')
+                .attr('stop-color', endColor); //dark blue
+
+            this.chart = this.svg.append('rect')
                 .attr('id', 'chart')
                 .attr('width', chartWidth)
                 .attr('height', chartHeight)
                 .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-                .style('fill-opacity', settings.solid);
-
-            //
-            // ADD A BACKGROUND TO AXIS AND TILES TO PROVIDE VISUAL COHERENCE
-            //
-
-            this.chart.append('rect')
-                .attr('id', 'background')
-                .attr('width', chartWidth)
-                .attr('height', chartHeight)
-                //.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
                 .attr('rx', showBorder ? borderFillet : 0)
                 .attr('ry', showBorder ? borderFillet : 0)
-                .style('fill', backgroundColor)
-                .style('fill-opacity', showBackground ? backgroundOpacity : settings.transparent)
+                .style('fill', (fillType === 'solid') ? startColor : 'url(#linearGradient') //backgroundColor)
+                .style('fill-opacity', showBackground ? fillOpacity : settings.transparent)
                 .style('stroke', showBorder ? borderColor : '#b3b3b3')
                 .style('stroke-width', showBorder ? borderWidth : 0);
-
         }
 
         /*
          * Method to return the size of a text node (Written for SVG1.1, with SVG2 could use SVGGraphicsElement more elegantly)
-         * TODO: Include Font/Type within the definition.
          *
          * @private
          * @param {string} text Text from which the screen width and height is required

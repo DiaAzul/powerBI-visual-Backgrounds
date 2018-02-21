@@ -14,19 +14,50 @@
                 }
             }
         },
-        "visBackground": {
-            "displayName": "Background",
+        "visFill": {
+            "displayName": "Fill",
             "properties": {
                 "showBackground": {
-                    "displayName": "Background",
-                    "displayNameKey": "background",
+                    "displayName": "Fill",
+                    "displayNameKey": "visFill",
                     "type": {
                         "bool": true
                     }
                 },
-                "backgroundColor": {
+                "fillType": {
+                    "displayName": "Fill Type",
+                    "type": {
+                        "enumeration": [
+                            {"value": "solid" , "displayName": "Solid"},
+                            {"value": "left" , "displayName": "Left to Right"},
+                            {"value": "right" , "displayName": "Right to Left"},
+                            {"value": "top" , "displayName": "Top to Bottom"},
+                            {"value": "bottom" , "displayName": "Bottom to Top"}
+                        ]
+                    }
+                },
+                "startColor": {
                     "displayName": "Colour",
-                    "displayNameKey": "backgroundColor",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "midColor": {
+                    "displayName": "Mid Colour",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "endColor": {
+                    "displayName": "End Colour",
                     "type": {
                         "fill": {
                             "solid": {
@@ -48,7 +79,7 @@
             "properties": {
                 "showBorder": {
                     "displayName": "Border",
-                    "displayNameKey": "border",
+                    "displayNameKey": "visBorder",
                     "type": {
                         "bool": true
                     }
@@ -66,14 +97,14 @@
                 },
                 "borderWidth": {
                     "displayName": "Width",
-                    "displayNameKey": "lineWidth",
+                    "displayNameKey": "borderWidth",
                     "type": {
                         "numeric": true
                     }
                 },
                 "borderFillet": {
                     "displayName": "Fillet",
-                    "displayNameKey": "fillet",
+                    "displayNameKey": "borderFillet",
                     "type": {
                         "numeric": true
                     }

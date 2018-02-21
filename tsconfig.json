@@ -15,7 +15,6 @@
     "node_modules/powerbi-visuals-utils-svgutils/lib/index.d.ts",
     "node_modules/powerbi-visuals-utils-interactivityutils/lib/index.d.ts",
     "node_modules/powerbi-models/dist/models-noexports.d.ts",
-    "src/colorTools.ts",
     "src/settings.ts",
     "src/visual.ts"
   ]

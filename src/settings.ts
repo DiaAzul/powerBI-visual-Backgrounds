@@ -37,19 +37,25 @@ module powerbi.extensibility.visual {
     // Text Size
     public fontSize: number = 12;
     // Show background;
-    public background: boolean = true;
-    // Tiles and legend background colour
-    public backgroundColor: string = '#b3b3b3';
+    public showBackground: boolean = true;
+    // Solid, Gradient (T->B), Gradient (L->R), etc..;
+    public fillType: string = 'solid';
+    // lowest colour background colour
+    public startColor: string = '#b3b3b3';
+    // mid colour background colour
+    public midColor: string = '#b3b3b3';
+    // highest colour background colour
+    public endColor: string = '#b3b3b3';
     // Tiles and legend backgound transparency
-    public backgroundOpacity: number = 20;
+    public fillOpacity: number = 20;
     // Show border;
-    public border: boolean = true;
+    public showBorder: boolean = true;
     // Border colour
     public borderColor: string = '#b3b3b3';
     // Border width
-    public borderWidth: number = 5;
+    public borderWidth: number = 2;
     // Border fillet
-    public borderFillet: number = 0;
+    public borderFillet: number = 15;
 
     // Transparent Opacity
     public transparent: number = 0;
@@ -59,4 +65,3 @@ module powerbi.extensibility.visual {
     public solid: number = 1.0;
   }
 }
-
