@@ -307,7 +307,7 @@ module powerbi.extensibility.visual {
                 .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
                 .attr('rx', showBorder ? borderFillet : 0)
                 .attr('ry', showBorder ? borderFillet : 0)
-                .style('fill', (fillType === 'solid') ? startColor : 'url(#linearGradient') //backgroundColor)
+                .style('fill', (fillType === 'solid') ? startColor : 'url(#linearGradient)')
                 .style('fill-opacity', showBackground ? fillOpacity : settings.transparent)
                 .style('stroke', showBorder ? borderColor : '#b3b3b3')
                 .style('stroke-width', showBorder ? borderWidth : 0);
