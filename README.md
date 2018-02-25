@@ -1,7 +1,8 @@
 # powerBI-visual-Background3
 Power BI custom visual showing a customisable rectangle
 
-![Build Status](https://travis-ci.org/DiaAzul/powerBI-visual-Heatmap3.svg?branch=master) [![Coverage Status](https://coveralls.io/repos/github/DiaAzul/powerBI-visual-Heatmap3/badge.svg?branch=master)](https://coveralls.io/github/DiaAzul/powerBI-visual-Heatmap3?branch=master) [![dependencies Status](https://david-dm.org/diaazul/powerBI-visual-Heatmap3/status.svg)](https://david-dm.org/diaazul/powerBI-visual-Heatmap3)
+![Build Status](https://travis-ci.org/DiaAzul/powerBI-visual-Backgrounds.svg?branch=master) [![Coverage Status](https://coveralls.io/repos/github/DiaAzul/powerBI-visual-Backgrounds/badge.svg?branch=master)](https://coveralls.io/github/DiaAzul/powerBI-visual-Backgrounds?branch=master) [![dependencies Status](https://david-dm.org/diaazul/powerBI-visual-Backgrounds/status.svg)](https://david-dm.org/diaazul/powerBI-visual-Backgrounds)
+
 
 <img src="./assets/backgroundVisual.png" width="600">
 
