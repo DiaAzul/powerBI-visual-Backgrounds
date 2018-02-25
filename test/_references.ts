@@ -17,7 +17,7 @@
 /// <reference path="../.tmp/drop/visual.d.ts" />
 //tslint:enable
 /// specific imports
-import Visual = powerbi.extensibility.visual.heatmap3a04841BE9D3CB4C4DA1353BE94873A343.Visual;
+import Visual = powerbi.extensibility.visual.background31370CA2483044A96811478CE3864A5EF.Visual;
 import IVisualHost = powerbi.extensibility.visual.IVisualHost;
 import MockIVisualHost = powerbi.extensibility.utils.test.mocks.MockIVisualHost;
 import MockIColorPalette = powerbi.extensibility.utils.test.mocks.MockIColorPalette;

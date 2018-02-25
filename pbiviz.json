@@ -4,7 +4,7 @@
     "displayName": "Background3",
     "guid": "background31370CA2483044A96811478CE3864A5EF",
     "visualClassName": "Visual",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Two dimensional heamap matrix by day of week, bank holiday and hour of day",
     "supportUrl": "",
     "gitHubUrl": ""
