@@ -1,5 +1,6 @@
 {
     "supportsHighlight": false,
+    "suppressDefaultTitle": true,
     "objects": {
         "text": {
             "displayName": "Text",
