@@ -72,6 +72,10 @@ module powerbi.extensibility.visual {
 
             this.svg = d3.select(this.target).append('svg');
 
+            // Call the routine to draw window from constructor to make sure it is drawn at least once.
+            const thisWindow: {width: number, height: number } = this.windowSize();
+            this.backgroundVisual(thisWindow.width, thisWindow.height);
+
         }
 
         public update(options: VisualUpdateOptions): void {
@@ -342,5 +346,8 @@ module powerbi.extensibility.visual {
             return { width: size.width, height: size.height };
         }
 
+        private windowSize(): { width: number, height: number } {
+            return { width: this.target.clientWidth, height: this.target.clientHeight };
+        }
     }
 }
