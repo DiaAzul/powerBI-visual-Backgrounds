@@ -111,6 +111,39 @@
                     }
                 }
             }
+        },
+        "dropShadow": {
+            "displayName": "Drop Shadow",
+            "properties": {
+                "showDropShadow": {
+                    "displayName": "Show",
+                    "displayNameKey": "showDropShadow",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "dropShadowOffset": {
+                    "displayName": "Offset",
+                    "displayNameKey": "dropShadowOffset",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "dropShadowBlur": {
+                    "displayName": "Blur",
+                    "displayNameKey": "dropShadowBlur",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "dropShadowOpacity": {
+                    "displayName": "Opacity",
+                    "displayNameKey": "dropShadowOpacity",
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
         }
     }
 }

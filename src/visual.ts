@@ -72,6 +72,10 @@ module powerbi.extensibility.visual {
 
             this.svg = d3.select(this.target).append('svg');
 
+            // Call the routine to draw window from constructor to make sure it is drawn at least once.
+            const thisWindow: { width: number, height: number } = this.windowSize();
+            this.backgroundVisual(thisWindow.width, thisWindow.height);
+
         }
 
         public update(options: VisualUpdateOptions): void {
@@ -143,7 +147,17 @@ module powerbi.extensibility.visual {
                         },
                         selector: null
                     });
-
+                case 'dropShadow':
+                    objectEnumeration.push({
+                        objectName: objectName,
+                        properties: {
+                            showDropShadow: this.settings.dataPoint.showDropShadow,
+                            dropShadowOffset: this.settings.dataPoint.dropShadowOffset,
+                            dropShadowBlur: this.settings.dataPoint.dropShadowBlur,
+                            dropShadowOpacity: this.settings.dataPoint.dropShadowOpacity
+                        },
+                        selector: null
+                    });
                 default:
             }
             return objectEnumeration;
@@ -160,6 +174,7 @@ module powerbi.extensibility.visual {
          *  + Add an assignment to parse the setting from the returned DataView object.
          *
          */
+        //tslint:disable:cyclomatic-complexity
         private parseSettings(dataView: DataView): VisualSettings {
 
             const visualSettings: VisualSettings = <VisualSettings>VisualSettings.parse(dataView);
@@ -195,6 +210,15 @@ module powerbi.extensibility.visual {
                     setting.borderWidth = ('borderWidth' in visBorder) ? <number>visBorder['borderWidth'] : setting.borderWidth;
                     setting.borderFillet = ('borderFillet' in visBorder) ? <number>visBorder['borderFillet'] : setting.borderFillet;
                 }
+                if ('dropShadow' in root) {
+                    const dropShadow: DataViewObject = root['dropShadow'];
+
+                    setting.showDropShadow = ('showDropShadow' in dropShadow) ? <boolean>dropShadow['showDropShadow'] : setting.showDropShadow;
+                    setting.dropShadowOffset = ('dropShadowOffset' in dropShadow) ? <number>dropShadow['dropShadowOffset'] : setting.dropShadowOffset;
+                    setting.dropShadowBlur = ('dropShadowBlur' in dropShadow) ? <number>dropShadow['dropShadowBlur'] : setting.dropShadowBlur;
+                    setting.dropShadowOpacity = ('dropShadowOpacity' in dropShadow) ? <number>dropShadow['dropShadowOpacity'] : setting.dropShadowOpacity;
+                    setting.dropShadowOpacity = (setting.dropShadowOpacity < 0) ? 0 : (setting.dropShadowOpacity > 1) ? 1 : setting.dropShadowOpacity;
+                }
 
             }
 
@@ -228,6 +252,11 @@ module powerbi.extensibility.visual {
             const borderWidth: number = settings.borderWidth;
             const borderFillet: number = settings.borderFillet;
 
+            const showDropShadow: boolean = settings.showDropShadow;
+            const dropShadowOffset: number = settings.dropShadowOffset;
+            const dropShadowBlur: number = settings.dropShadowBlur;
+            const dropShadowOpacity: number = settings.dropShadowOpacity;
+
             // RefTextSize is the size of a character on screen (used for adjusting chart for different type sizes)
             // const refTextSize: { width: number, height: number } = this.textSize('W', fontSize);
 
@@ -245,6 +274,8 @@ module powerbi.extensibility.visual {
             this.svg
                 .attr('width', windowWidth)
                 .attr('height', windowHeight)
+                //.attr('viewBox', '0 0 ' + (chartWidth + 20) + ' ' + (chartHeight + 20))
+                .attr('overflow', 'visible')
                 .style('fill-opacity', settings.transparent);
 
             if (this.chart != null && !this.chart.empty()) {
@@ -257,28 +288,28 @@ module powerbi.extensibility.visual {
             }
             this.defs = this.svg.append('defs').attr('id', 'gradient');
 
-            const direction: { left: number, top: number, right: number, bottom: number} = { left: 0, top: 0, right: 0, bottom: 0 };
+            const direction: { left: number, top: number, right: number, bottom: number } = { left: 0, top: 0, right: 0, bottom: 0 };
 
             switch (fillType) {
                 case 'left':
-                direction.right = 100;
-                break;
+                    direction.right = 100;
+                    break;
 
                 case 'right':
-                direction.left = 100;
-                break;
+                    direction.left = 100;
+                    break;
 
                 case 'top':
-                direction.bottom = 100;
-                break;
+                    direction.bottom = 100;
+                    break;
 
                 case 'bottom':
-                direction.top = 100;
-                break;
+                    direction.top = 100;
+                    break;
 
                 case 'solid':
                 default:
-                break;
+                    break;
 
             }
 
@@ -300,15 +331,55 @@ module powerbi.extensibility.visual {
                 .attr('offset', '100%')
                 .attr('stop-color', endColor); //dark blue
 
+            // create filter with id #dropShadow
+            // height=130% so that the shadow is not clipped
+            const dropShadow: d3.Selection<SVGElement> = this.defs.append('filter')
+                .attr('id', 'dropShadow')
+                .attr('height', '130%')
+                .attr('width', '130%');
+
+            // SourceAlpha refers to opacity of graphic that this filter will be applied to
+            // convolve that with a Gaussian with standard deviation 3 and store result
+            // in blur
+            dropShadow.append('feGaussianBlur')
+                .attr('in', 'SourceAlpha')
+                .attr('stdDeviation', dropShadowBlur / 1.3)
+                .attr('result', 'blur');
+
+            dropShadow.append('feComponentTransfer')
+                .attr('in', 'blur')
+                .attr('result', 'reducedOpacity')
+                .append('feFuncA')
+                .attr('type', 'linear')
+                .attr('slope', dropShadowOpacity);
+
+            // translate output of Gaussian blur to the right and downwards with 2px
+            // store result in offsetBlur
+            dropShadow.append('feOffset')
+                .attr('in', 'reducedOpacity')
+                .attr('dx', dropShadowOffset)
+                .attr('dy', dropShadowOffset)
+                .attr('result', 'offsetBlur');
+
+            // overlay original SourceGraphic over translated blurred opacity by using
+            // feMerge filter. Order of specifying inputs is important!
+            const feMerge: d3.Selection<SVGElement> = dropShadow.append('feMerge');
+
+            feMerge.append('feMergeNode')
+                .attr('in', 'offsetBlur');
+            feMerge.append('feMergeNode')
+                .attr('in', 'SourceGraphic');
+
             this.chart = this.svg.append('rect')
                 .attr('id', 'chart')
-                .attr('width', chartWidth)
-                .attr('height', chartHeight)
+                .attr('width', chartWidth - (showDropShadow ? (dropShadowOffset + dropShadowBlur) : 0))
+                .attr('height', chartHeight - (showDropShadow ? (dropShadowOffset + dropShadowBlur) : 0))
                 .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
                 .attr('rx', showBorder ? borderFillet : 0)
                 .attr('ry', showBorder ? borderFillet : 0)
                 .style('fill', (fillType === 'solid') ? startColor : 'url(#linearGradient)')
                 .style('fill-opacity', showBackground ? fillOpacity : settings.transparent)
+                .style('filter', showDropShadow ? 'url(#dropShadow)' : '')
                 .style('stroke', showBorder ? borderColor : '#b3b3b3')
                 .style('stroke-width', showBorder ? borderWidth : 0);
         }
@@ -342,5 +413,8 @@ module powerbi.extensibility.visual {
             return { width: size.width, height: size.height };
         }
 
+        private windowSize(): { width: number, height: number } {
+            return { width: this.target.clientWidth, height: this.target.clientHeight };
+        }
     }
 }

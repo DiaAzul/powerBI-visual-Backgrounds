@@ -56,6 +56,14 @@ module powerbi.extensibility.visual {
     public borderWidth: number = 2;
     // Border fillet
     public borderFillet: number = 15;
+    // Border colour
+    public showDropShadow: boolean = false;
+    // Border colour
+    public dropShadowOffset: number = 10;
+    // Border fillet
+    public dropShadowBlur: number = 3;
+    // Border fillet
+    public dropShadowOpacity: number = 0.4;
 
     // Transparent Opacity
     public transparent: number = 0;
