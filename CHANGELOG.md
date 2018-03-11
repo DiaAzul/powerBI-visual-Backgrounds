@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [1.0.6] - 2017-03-11
 ### Added
-Added option to a drop shadow to rectangle
+Option to add a drop shadow to the rectangle
 
 ## [1.0.5] - 2017-03-01
 ### Fixed
